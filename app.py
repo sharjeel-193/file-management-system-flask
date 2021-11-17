@@ -7,6 +7,7 @@ import stylesheet
 import dialogues
 import os
 
+
 def goback():
     try:
         os.chdir("../")
@@ -19,6 +20,7 @@ def goback():
         msgBox.setText(str(e))
         msgBox.setWindowTitle("Error")
         msgBox.exec_()
+
 
 def changeWD():
     try:
@@ -64,11 +66,12 @@ mainLayout.addWidget(logo)
 
 brandName = qtWidget.QLabel()
 brandName.setText("Our Own Operating System")
-brandName.setStyleSheet("font-size: 20px; font-family: Copperplate; margin-bottom: 30px")
+brandName.setStyleSheet(
+    "font-size: 20px; font-family: Copperplate; margin-bottom: 30px")
 brandName.setAlignment(QtCore.Qt.AlignCenter)
 mainLayout.addWidget(brandName)
 
-#Current Path and Directory
+# Current Path and Directory
 backBtn = qtWidget.QPushButton()
 backBtn.setCursor(qtGui.QCursor(QtCore.Qt.PointingHandCursor))
 backBtn.setIcon(qtGui.QIcon("backBtn.png"))
@@ -95,7 +98,7 @@ pathLayout.addWidget(goBtn)
 
 mainLayout.addLayout(pathLayout)
 
-#Functions Btn
+# Functions Btn
 
 addFileBtn = qtWidget.QPushButton()
 addFileBtn.setCursor(qtGui.QCursor(QtCore.Qt.PointingHandCursor))
@@ -165,20 +168,17 @@ memoryMapBtn = qtWidget.QPushButton()
 memoryMapBtn.setCursor(qtGui.QCursor(QtCore.Qt.PointingHandCursor))
 memoryMapBtn.setIcon(qtGui.QIcon("memory.png"))
 memoryMapBtn.setText(" Show Memory Map")
+memoryMapBtn.clicked.connect(dialogues.showMemMapDlg)
 memoryMapBtn.setStyleSheet(stylesheet.funcBtnStyle)
 btnGrid.addWidget(memoryMapBtn, 4, 1)
-
 
 
 mainLayout.addLayout(btnGrid)
 
 
-
-
-
 window.show()
 sys.exit(app.exec())
 
+
 def getcwd():
     return os.getcwd()
-

@@ -1,8 +1,9 @@
 import stylesheet
 from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QPushButton, QGridLayout, QPlainTextEdit, QTextEdit, QCheckBox
-from PyQt5 import QtCore    
+from PyQt5 import QtCore
 from PyQt5.QtGui import QCursor, QValidator, QIntValidator
 import functions
+
 
 def createFileDlg():
     dlg = QDialog()
@@ -37,6 +38,7 @@ def createFileDlg():
 
     dlg.exec()
 
+
 def deleteFileDlg():
     dlg = QDialog()
     grid = QGridLayout()
@@ -68,8 +70,8 @@ def deleteFileDlg():
     delBtn.clicked.connect(lambda: functions.deleteFile(nameBox.text()))
     grid.addWidget(delBtn, 1, 1)
 
-
     dlg.exec()
+
 
 def addDirDlg():
     dlg = QDialog()
@@ -104,6 +106,7 @@ def addDirDlg():
 
     dlg.exec()
 
+
 def delDirDlg():
     dlg = QDialog()
     grid = QGridLayout()
@@ -135,8 +138,8 @@ def delDirDlg():
     delBtn.clicked.connect(lambda: functions.deleteDirectory(nameBox.text()))
     grid.addWidget(delBtn, 1, 1)
 
-
     dlg.exec()
+
 
 def openFileDlg():
     dlg = QDialog()
@@ -171,6 +174,7 @@ def openFileDlg():
 
     dlg.exec()
 
+
 def closeFileDlg():
     dlg = QDialog()
     grid = QGridLayout()
@@ -204,6 +208,7 @@ def closeFileDlg():
 
     dlg.exec()
 
+
 def writeToFileDlg():
     dlg = QDialog()
     grid = QGridLayout()
@@ -227,7 +232,8 @@ def writeToFileDlg():
     grid.addWidget(label, 2, 0)
 
     checkAppend = QCheckBox()
-    checkAppend.stateChanged.connect(lambda: posBox.setEnabled(not (checkAppend.isChecked())))
+    checkAppend.stateChanged.connect(
+        lambda: posBox.setEnabled(not (checkAppend.isChecked())))
     grid.addWidget(checkAppend, 2, 1)
 
     label = QLabel()
@@ -264,7 +270,12 @@ def writeToFileDlg():
     writeBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
     writeBtn.setText("Write to File")
     writeBtn.setStyleSheet(stylesheet.formBtnStyle)
-    writeBtn.clicked.connect(lambda: functions.writeToFile(nameBox.text(), posBox.text(), textBox.toPlainText(), checkAppend.isChecked()))
+    writeBtn.clicked.connect(lambda: functions.writeToFile(
+        nameBox.text(), posBox.text(), textBox.toPlainText(), checkAppend.isChecked()))
     grid.addWidget(writeBtn, 5, 1)
 
     dlg.exec()
+
+
+def showMemMapDlg():
+    functions.showMemMap()
