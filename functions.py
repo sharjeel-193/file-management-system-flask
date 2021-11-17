@@ -6,11 +6,6 @@ from treelib import Node, Tree
 tree = Tree()
 cwd = os.getcwd()
 tree.create_node(cwd, cwd)
-# tree.create_node("Harry", 1, data={
-#                  "name": "dsa", "createdAt": 12, "size": 12})  # root node
-# tree.create_node("Hdarry", "harry", 1)  # root node
-# tree.create_node("arry", "arry", "harry")  # root node
-# print(tree.to_json(with_data=True))
 
 
 def getcwd():
@@ -146,21 +141,20 @@ def writeToFile(fileName, pos, text, appMode):
 
 def recurseDirHandle(dir):
     for contentWithin in dir.values():
-        for child in contentWithin["children"]:
-            for name in child:
-                if child[name]["data"]["isDir"]:
-                    if child[name]["children"]:
-                        recurseDirHandle(child[name]["children"])
-                else:
-                    stat = os.stat(name)
-                    child[name]["data"] = {"isDir": False, "file_mode": stat.st_mode, "inode": stat.st_ino, "num_of_hard_links": stat.st_nlink, "user_id": stat.st_uid,
-                                           "group_id": stat.st_gid, "size": stat.st_size, "last_access_time": stat.st_atime, "last_modified": stat.st_mtime}
+        if "children" in contentWithin:
+            for child in contentWithin["children"]:
+                for name in child:
+                    if child[name]["data"]["isDir"]:
+                        if "children" in child[name]:
+                            recurseDirHandle(child)
+                    else:
+                        stat = os.stat(name)
+                        child[name]["data"] = {"isDir": False, "file_mode": stat.st_mode, "inode": stat.st_ino, "num_of_hard_links": stat.st_nlink, "user_id": stat.st_uid,
+                                               "group_id": stat.st_gid, "size": stat.st_size, "last_access_time": stat.st_atime, "last_modified": stat.st_mtime}
 
 
 def showMemMap():
     memMap = json.loads(tree.to_json(with_data=True))
     recurseDirHandle(memMap)
-    # print(memMap)
-    # for node in tree.expand_tree(mode=Tree.DEPTH):
-    #     print(memMap[tree[node].tag])
     print(memMap)
+    return memMap
