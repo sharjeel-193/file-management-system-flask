@@ -126,9 +126,14 @@ def writeToFile(fileName, pos, text, appMode):
         else:
             try:
                 if os.path.exists(fileName):
+                    with open(fileName, "r") as f:
+                        fileData = f.read()
+                        f.close()
+
                     with open(fileName, "w") as f:
-                        f.seek(int(pos), 0)
-                        f.write(text)
+                        fileData = fileData[:int(
+                            pos)] + text + fileData[int(pos):]
+                        f.write(fileData)
                     createInfoBox(fileName+" modified")
                 else:
                     createErrorBox(
