@@ -1,31 +1,43 @@
 import json
 import os
 from PyQt5.QtWidgets import QMessageBox
-from treelib import  Tree
-import json2tree
+from treelib import Tree
 
 tree = Tree()
-cwd = os.getcwd()
-tree.create_node(cwd, cwd)
+root = os.getcwd()
+tree.create_node(root, root)
+memMapFileName = "memMap.txt"
 
-class Node(object):
-    def __init__(self, name, path_to_file=None):
-        self.name = name
-        self.path_to_file = path_to_file
-        self.children = []
 
-    def add_child(self, obj):
-        self.children.append(obj)
+def unravelMemMap(dir, root):
+    for entryName, contentWithin in dir.items():
+        if "children" in contentWithin:
+            for child in contentWithin["children"]:
+                for name in child:
+                    parent = f"{root}/{entryName}" if not root == "" else entryName
+                    tree.create_node(name, f"{entryName}/{name}", parent)
+                    print(child)
+                    if child[name]["data"]["isDir"]:
+                        if "children" in child[name]:
+                            unravelMemMap(child, entryName)
 
-    def dump(self, indent=0):
-        """dump tree to string"""
-        tab = '    '*(indent-1) + ' |- ' if indent > 0 else ''
-        print('%s%s' % (tab, self.name))
-        for obj in self.children:
-            obj.dump(indent + 1)
+
+if os.path.exists(memMapFileName):
+    with open(memMapFileName, "r") as f:
+        memMap = json.loads(f.read())
+        f.close()
+    print(memMap)
+    unravelMemMap(memMap, "")
+
 
 def getcwd():
     return os.getcwd()
+
+
+def persistMemMap():
+    with open(memMapFileName, "w") as f:
+        f.write(tree.to_json(with_data=True))
+        f.close()
 
 
 def goback():
@@ -64,6 +76,7 @@ def createFile(fileName):
                 fp.write("New File Created")
                 fp.close()
             tree.create_node(fileName, filePath, cwd, {"isDir": False})
+            persistMemMap()
             createInfoBox(fileName+" created")
         else:
             createErrorBox("File already exists", QMessageBox.Critical)
@@ -75,8 +88,9 @@ def deleteFile(fileName):
     try:
         os.remove(fileName)
         createInfoBox(fileName+" deleted")
-        filePath = os.path.join(cwd, fileName)
+        filePath = os.path.join(os.getcwd(), fileName)
         tree.remove_node(filePath)
+        persistMemMap()
     except Exception as e:
         createErrorBox(str(e), QMessageBox.Critical)
 
@@ -88,6 +102,7 @@ def createDirectory(dirName):
         cwd = os.getcwd()
         dirPath = os.path.join(cwd, dirName)
         tree.create_node(dirName, dirPath, cwd, {"isDir": True})
+        persistMemMap()
     except Exception as e:
         createErrorBox(str(e), QMessageBox.Critical)
 
@@ -96,8 +111,9 @@ def deleteDirectory(dirName):
     try:
         os.rmdir(dirName)
         createInfoBox(dirName+" created")
-        dirPath = os.path.join(cwd, dirName)
+        dirPath = os.path.join(os.getcwd(), dirName)
         tree.remove_node(dirPath)
+        persistMemMap()
     except Exception as e:
         createErrorBox(str(e), QMessageBox.Critical)
 
@@ -155,9 +171,10 @@ def writeToFile(fileName, pos, text, appMode):
     else:
         createErrorBox("Please Fill All the Fields", QMessageBox.Warning)
 
-def readFromFile (fileName, pos, size):
+
+def readFromFile(fileName, pos, size):
     try:
-        x=int(pos)+int(size)
+        x = int(pos)+int(size)
         f = open(fileName, "r")
         data = f.read()
         f.close()
@@ -165,31 +182,36 @@ def readFromFile (fileName, pos, size):
     except Exception as e:
         createErrorBox(str(e), QMessageBox.Critical)
 
+
 def moveContentWithinFile(fileName, start, size, target):
     try:
-        x=int(start)+int(size)
+        x = int(start)+int(size)
         f = open(fileName, "r")
         data = f.read()
         f.close()
         f = open(fileName, "w")
-        moveData=data[int(start):x]
-        data=data[:int(target)] + moveData+data[int(target):]
-        removedData=""
-        data=data[:int(start)]+removedData+data[x:]
-        f.write(data) 
+        moveData = data[int(start):x]
+        data = data[:int(target)] + moveData+data[int(target):]
+        removedData = ""
+        data = data[:int(start)]+removedData+data[x:]
+        f.write(data)
         f.close()
         createInfoBox(fileName + " Content Modified")
     except Exception as e:
         createErrorBox(str(e), QMessageBox.Critical)
 
-def moveFile(fileName,newDir):
+
+def moveFile(fileName, newDir):
     try:
         cwd = os.getcwd()
-        os.rename(cwd+"/"+fileName, newDir+"/"+fileName)
+        oldPath = os.path.join(cwd, fileName)
+        newPath = os.path.join(newDir, fileName)
+        os.rename(oldPath, newPath)
         createInfoBox("File Moved")
+        tree.move_node(oldPath, os.path.join(cwd, newDir))
+        persistMemMap()
     except Exception as e:
         createErrorBox(str(e), QMessageBox.Critical)
-
 
 
 def recurseDirHandle(dir):
@@ -209,23 +231,10 @@ def recurseDirHandle(dir):
 def showMemMap():
     memMap = json.loads(tree.to_json(with_data=True))
     # recurseDirHandle(memMap)
-    # os.remove('tree.txt')
-    # tree.save2file('tree.txt')
-    # print(json2tree(json.dumps(memMap)))
-
-    # with open('tree.txt') as file:
-    #     lines = file.readlines()
-    #     lines = [line.rstrip() for line in lines]
-
-    # print (lines)
-    # print(memMap)
-    # for entry in memMap:
-    #     treeText = f"{entry}\n|_ "
-    # mapToText(memMap,treeText)
-    # print(treeText)
     return tree
 
-def mapToText(memMap,treeText):
+
+def mapToText(memMap, treeText):
     # rootName = 'F:\BSCS\BSCS-Sem-5\CS 330 - Operating Systems\LABS\Lab 6'
     # info = memMap[rootName]
     # # print(info)
@@ -241,10 +250,7 @@ def mapToText(memMap,treeText):
                     if child[name]["data"]["isDir"]:
                         if "children" in child[name]:
                             treeText += "\n|_ "
-                            mapToText(child,treeText)
+                            mapToText(child, treeText)
                     else:
                         pass
     print(treeText)
-
-
-
