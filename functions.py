@@ -6,7 +6,7 @@ from treelib import Tree
 tree = Tree()
 root = os.getcwd()
 tree.create_node(root, root)
-memMapFileName = "memMap.txt"
+memMapFileName = os.path.join(root, "memMap.txt")
 
 
 def unravelMemMap(dir, root):
@@ -14,12 +14,15 @@ def unravelMemMap(dir, root):
         if "children" in contentWithin:
             for child in contentWithin["children"]:
                 for name in child:
-                    parent = f"{root}/{entryName}" if not root == "" else entryName
-                    tree.create_node(name, f"{entryName}/{name}", parent)
-                    print(child)
-                    if child[name]["data"]["isDir"]:
-                        if "children" in child[name]:
-                            unravelMemMap(child, entryName)
+                    parent = os.path.join(
+                        root, entryName) if not root == "" else entryName
+                    if os.path.exists(os.path.join(parent, name)):
+                        tree.create_node(
+                            name, os.path.join(parent, name), parent, child[name]["data"])
+                        print(child)
+                        if child[name]["data"]["isDir"]:
+                            if "children" in child[name]:
+                                unravelMemMap(child, parent)
 
 
 if os.path.exists(memMapFileName):
@@ -30,14 +33,14 @@ if os.path.exists(memMapFileName):
     unravelMemMap(memMap, "")
 
 
-def getcwd():
-    return os.getcwd()
-
-
 def persistMemMap():
     with open(memMapFileName, "w") as f:
         f.write(tree.to_json(with_data=True))
         f.close()
+
+
+def getcwd():
+    return os.getcwd()
 
 
 def goback():
@@ -75,7 +78,7 @@ def createFile(fileName):
             with open(fileName, 'w') as fp:
                 fp.write("New File Created")
                 fp.close()
-            tree.create_node(fileName, filePath, cwd, {"isDir": False})
+            print(tree.create_node(fileName, filePath, cwd, {"isDir": False}))
             persistMemMap()
             createInfoBox(fileName+" created")
         else:
@@ -101,7 +104,7 @@ def createDirectory(dirName):
         createInfoBox(dirName+" created")
         cwd = os.getcwd()
         dirPath = os.path.join(cwd, dirName)
-        tree.create_node(dirName, dirPath, cwd, {"isDir": True})
+        print(tree.create_node(dirName, dirPath, cwd, {"isDir": True}))
         persistMemMap()
     except Exception as e:
         createErrorBox(str(e), QMessageBox.Critical)
@@ -205,32 +208,41 @@ def moveFile(fileName, newDir):
     try:
         cwd = os.getcwd()
         oldPath = os.path.join(cwd, fileName)
-        newPath = os.path.join(newDir, fileName)
+        newPath = os.path.join(cwd, newDir, fileName)
         os.rename(oldPath, newPath)
         createInfoBox("File Moved")
-        tree.move_node(oldPath, os.path.join(cwd, newDir))
+        node = tree.get_node(oldPath)
+        tree.remove_node(oldPath)
+        print(tree.create_node(fileName, newPath,
+                               os.path.join(cwd, newDir), node.data))
         persistMemMap()
     except Exception as e:
+        print(e)
         createErrorBox(str(e), QMessageBox.Critical)
 
 
-def recurseDirHandle(dir):
-    for contentWithin in dir.values():
+def recurseDirHandle(dir, root):
+    for entryName, contentWithin in dir.items():
         if "children" in contentWithin:
             for child in contentWithin["children"]:
                 for name in child:
+                    print(child)
+                    parent = os.path.join(
+                        root, entryName) if not root == "" else entryName
+
                     if child[name]["data"]["isDir"]:
                         if "children" in child[name]:
-                            recurseDirHandle(child)
+                            recurseDirHandle(child, parent)
                     else:
-                        stat = os.stat(name)
+                        stat = os.stat(os.path.join(parent, name))
                         child[name]["data"] = {"isDir": False, "file_mode": stat.st_mode, "inode": stat.st_ino, "num_of_hard_links": stat.st_nlink, "user_id": stat.st_uid,
                                                "group_id": stat.st_gid, "size": stat.st_size, "last_access_time": stat.st_atime, "last_modified": stat.st_mtime}
 
 
 def showMemMap():
     memMap = json.loads(tree.to_json(with_data=True))
-    # recurseDirHandle(memMap)
+    recurseDirHandle(memMap, "")
+    # print(tree.children("C:\\Users\\Bassam Muhammad\Desktop\\file_management-system"))
     return tree
 
 

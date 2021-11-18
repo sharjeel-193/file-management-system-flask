@@ -6,7 +6,6 @@ import functions
 import os
 
 
-
 def createFileDlg():
     dlg = QDialog()
     grid = QGridLayout()
@@ -278,6 +277,7 @@ def writeToFileDlg():
 
     dlg.exec()
 
+
 def readFileDlg():
     dlg = QDialog()
     grid = QGridLayout()
@@ -340,10 +340,12 @@ def readFileDlg():
     writeBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
     writeBtn.setText("Read from File")
     writeBtn.setStyleSheet(stylesheet.formBtnStyle)
-    writeBtn.clicked.connect(lambda: textBox.setPlainText(functions.readFromFile(nameBox.text(), posBox.text(), sizeBox.text())))
+    writeBtn.clicked.connect(lambda: textBox.setPlainText(
+        functions.readFromFile(nameBox.text(), posBox.text(), sizeBox.text())))
     grid.addWidget(writeBtn, 5, 1)
 
     dlg.exec()
+
 
 def moveContentFile():
     dlg = QDialog()
@@ -408,10 +410,12 @@ def moveContentFile():
     moveBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
     moveBtn.setText("Move Content within File")
     moveBtn.setStyleSheet(stylesheet.formBtnStyle)
-    moveBtn.clicked.connect(lambda: functions.moveContentWithinFile(nameBox.text(), startBox.text(), sizeBox.text(), targetBox.text()))
+    moveBtn.clicked.connect(lambda: functions.moveContentWithinFile(
+        nameBox.text(), startBox.text(), sizeBox.text(), targetBox.text()))
     grid.addWidget(moveBtn, 4, 1)
 
     dlg.exec()
+
 
 def showMoveFileDlg():
     dlg = QDialog()
@@ -452,7 +456,8 @@ def showMoveFileDlg():
     moveBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
     moveBtn.setText("Move File")
     moveBtn.setStyleSheet(stylesheet.formBtnStyle)
-    moveBtn.clicked.connect(lambda: functions.moveFile(nameBox.text(), dirName.text()))
+    moveBtn.clicked.connect(lambda: functions.moveFile(
+        nameBox.text(), dirName.text()))
     grid.addWidget(moveBtn, 2, 1)
 
     dlg.exec()
@@ -479,15 +484,15 @@ def showMemMapDlg():
     cancelBtn.setStyleSheet(stylesheet.formBtnStyle)
     cancelBtn.clicked.connect(dlg.close)
     grid.addWidget(cancelBtn, 1, 0)
-    
+
     dlg.exec()
 
     # mapStrings(lines)
     # print(mapStrings(lines))
+
 
 def mapStrings(mapTree):
     for line in mapTree:
         line = os.path.basename(line)
         print(line)
     return mapTree
-
