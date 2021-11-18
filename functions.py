@@ -182,6 +182,16 @@ def moveContentWithinFile(fileName, start, size, target):
     except Exception as e:
         createErrorBox(str(e), QMessageBox.Critical)
 
+def moveFile(fileName,newDir):
+    try:
+        cwd = os.getcwd()
+        os.rename(cwd+"/"+fileName, newDir+"/"+fileName)
+        createInfoBox("File Moved")
+    except Exception as e:
+        createErrorBox(str(e), QMessageBox.Critical)
+
+
+
 def recurseDirHandle(dir):
     for contentWithin in dir.values():
         if "children" in contentWithin:

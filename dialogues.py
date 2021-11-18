@@ -414,7 +414,48 @@ def moveContentFile():
     dlg.exec()
 
 def showMoveFileDlg():
-    print('MOVE')
+    dlg = QDialog()
+    grid = QGridLayout()
+    dlg.setLayout(grid)
+    dlg.setWindowTitle("Move File")
+
+    label = QLabel()
+    label.setText("File Name")
+    label.setAlignment(QtCore.Qt.AlignCenter)
+    label.setStyleSheet(stylesheet.formLabelStyle)
+    grid.addWidget(label, 0, 0)
+
+    nameBox = QLineEdit()
+    nameBox.setStyleSheet(stylesheet.formInputStyle)
+    grid.addWidget(nameBox, 0, 1)
+
+    label = QLabel()
+    label.setText("Target Directory")
+    label.setAlignment(QtCore.Qt.AlignCenter)
+    label.setStyleSheet(stylesheet.formLabelStyle)
+    grid.addWidget(label, 1, 0)
+
+    dirName = QLineEdit()
+    # startBox.setValidator(QIntValidator())
+    # startBox.setText(str(1))
+    dirName.setStyleSheet(stylesheet.formInputStyle)
+    grid.addWidget(dirName, 1, 1)
+
+    cancelBtn = QPushButton()
+    cancelBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+    cancelBtn.setText("Cancel")
+    cancelBtn.setStyleSheet(stylesheet.formBtnStyle)
+    cancelBtn.clicked.connect(dlg.close)
+    grid.addWidget(cancelBtn, 2, 0)
+
+    moveBtn = QPushButton()
+    moveBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+    moveBtn.setText("Move File")
+    moveBtn.setStyleSheet(stylesheet.formBtnStyle)
+    moveBtn.clicked.connect(lambda: functions.moveFile(nameBox.text(), dirName.text()))
+    grid.addWidget(moveBtn, 2, 1)
+
+    dlg.exec()
 
 
 def showMemMapDlg():
