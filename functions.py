@@ -1,12 +1,28 @@
 import json
 import os
 from PyQt5.QtWidgets import QMessageBox
-from treelib import Node, Tree
+from treelib import  Tree
+import json2tree
 
 tree = Tree()
 cwd = os.getcwd()
 tree.create_node(cwd, cwd)
 
+class Node(object):
+    def __init__(self, name, path_to_file=None):
+        self.name = name
+        self.path_to_file = path_to_file
+        self.children = []
+
+    def add_child(self, obj):
+        self.children.append(obj)
+
+    def dump(self, indent=0):
+        """dump tree to string"""
+        tab = '    '*(indent-1) + ' |- ' if indent > 0 else ''
+        print('%s%s' % (tab, self.name))
+        for obj in self.children:
+            obj.dump(indent + 1)
 
 def getcwd():
     return os.getcwd()
@@ -47,7 +63,7 @@ def createFile(fileName):
             with open(fileName, 'w') as fp:
                 fp.write("New File Created")
                 fp.close()
-            tree.create_node(filePath, filePath, cwd, {"isDir": False})
+            tree.create_node(fileName, filePath, cwd, {"isDir": False})
             createInfoBox(fileName+" created")
         else:
             createErrorBox("File already exists", QMessageBox.Critical)
@@ -71,7 +87,7 @@ def createDirectory(dirName):
         createInfoBox(dirName+" created")
         cwd = os.getcwd()
         dirPath = os.path.join(cwd, dirName)
-        tree.create_node(dirPath, dirPath, cwd, {"isDir": True})
+        tree.create_node(dirName, dirPath, cwd, {"isDir": True})
     except Exception as e:
         createErrorBox(str(e), QMessageBox.Critical)
 
@@ -95,6 +111,7 @@ def openFile(fileName):
 
 
 def closeFile(fileName):
+    print(fileName)
     try:
         os.close(fileName)
         createInfoBox(fileName+" closed")
@@ -138,6 +155,32 @@ def writeToFile(fileName, pos, text, appMode):
     else:
         createErrorBox("Please Fill All the Fields", QMessageBox.Warning)
 
+def readFromFile (fileName, pos, size):
+    try:
+        x=int(pos)+int(size)
+        f = open(fileName, "r")
+        data = f.read()
+        f.close()
+        return data[int(pos):int(x)]
+    except Exception as e:
+        createErrorBox(str(e), QMessageBox.Critical)
+
+def moveContentWithinFile(fileName, start, size, target):
+    try:
+        x=int(start)+int(size)
+        f = open(fileName, "r")
+        data = f.read()
+        f.close()
+        f = open(fileName, "w")
+        moveData=data[int(start):x]
+        data=data[:int(target)] + moveData+data[int(target):]
+        removedData=""
+        data=data[:int(start)]+removedData+data[x:]
+        f.write(data) 
+        f.close()
+        createInfoBox(fileName + " Content Modified")
+    except Exception as e:
+        createErrorBox(str(e), QMessageBox.Critical)
 
 def recurseDirHandle(dir):
     for contentWithin in dir.values():
@@ -155,6 +198,43 @@ def recurseDirHandle(dir):
 
 def showMemMap():
     memMap = json.loads(tree.to_json(with_data=True))
-    recurseDirHandle(memMap)
-    print(memMap)
-    return memMap
+    # recurseDirHandle(memMap)
+    # os.remove('tree.txt')
+    # tree.save2file('tree.txt')
+    # print(json2tree(json.dumps(memMap)))
+
+    # with open('tree.txt') as file:
+    #     lines = file.readlines()
+    #     lines = [line.rstrip() for line in lines]
+
+    # print (lines)
+    # print(memMap)
+    # for entry in memMap:
+    #     treeText = f"{entry}\n|_ "
+    # mapToText(memMap,treeText)
+    # print(treeText)
+    return tree
+
+def mapToText(memMap,treeText):
+    # rootName = 'F:\BSCS\BSCS-Sem-5\CS 330 - Operating Systems\LABS\Lab 6'
+    # info = memMap[rootName]
+    # # print(info)
+    # for child in info['children']:
+    #     if child:
+    #         root.add_child(mapToText(child))
+    # print (root)
+    for contentWithin in memMap.values():
+        if "children" in contentWithin:
+            for child in contentWithin["children"]:
+                for name in child:
+                    treeText += name
+                    if child[name]["data"]["isDir"]:
+                        if "children" in child[name]:
+                            treeText += "\n|_ "
+                            mapToText(child,treeText)
+                    else:
+                        pass
+    print(treeText)
+
+
+
