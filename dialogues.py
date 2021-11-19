@@ -1,5 +1,5 @@
 import stylesheet
-from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QPushButton, QGridLayout, QPlainTextEdit, QTextEdit, QCheckBox
+from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QListWidget, QPushButton, QGridLayout, QPlainTextEdit, QTextEdit, QCheckBox, QTreeWidget, QTreeWidgetItem
 from PyQt5 import QtCore
 from PyQt5.QtGui import QCursor, QValidator, QIntValidator
 import functions
@@ -463,19 +463,57 @@ def showMoveFileDlg():
     dlg.exec()
 
 
-def showMemMapDlg():
-    tree = functions.showMemMap()
-    str1 = ''
-    # print(tree)
+def makeTree(tree, root, treeNode):
+    for entryName, contentWithin in tree.items():
+        if "children" in contentWithin:
+            for child in contentWithin["children"]:
+                for name in child:
+                    print(child)
+                    parent = os.path.join(
+                        root, entryName) if not root == "" else entryName
+                    branch = QTreeWidgetItem([name])
+                    treeNode.addChild(branch)
+                    if child[name]["data"]["isDir"]:
+                        if "children" in child[name]:
+                            makeTree(child, parent, branch)
+
+
+def searchText(text, tree, root):
+    for entryName, contentWithin in tree.items():
+        if text == entryName:
+            return contentWithin["data"]
+        if "children" in contentWithin:
+            for child in contentWithin["children"]:
+                for name in child:
+                    if name == text:
+                        return child[name]["data"]
+                    parent = os.path.join(
+                        root, entryName) if not root == "" else entryName
+                    if child[name]["data"]["isDir"]:
+                        if "children" in child[name]:
+                            output = searchText(text, child, parent)
+                            if len(output) > 0:
+                                return output
+
+        return {}
+    return {}
+
+
+def handleTreeItemClicked(clickedItem, tree):
+    text = clickedItem.text(0)
+    info = searchText(text, tree, "")
+    outStr = ""
+    for key, value in info.items():
+        outStr += f"{key}: {value}\n"
     dlg = QDialog()
     grid = QGridLayout()
     dlg.setLayout(grid)
-    dlg.setWindowTitle("Write to File")
+    dlg.setWindowTitle("Memory Map")
 
-    textBox = QPlainTextEdit()
+    textBox = QLabel()
     textBox.setStyleSheet(stylesheet.formInputStyle)
     textBox.resize(300, 200)
-    textBox.setPlainText(str(tree))
+    textBox.setText(outStr)
     grid.addWidget(textBox, 0, 0)
 
     cancelBtn = QPushButton()
@@ -487,12 +525,28 @@ def showMemMapDlg():
 
     dlg.exec()
 
-    # mapStrings(lines)
-    # print(mapStrings(lines))
 
+def showMemMapDlg():
+    tree = functions.showMemMap()
+    dlg = QDialog()
+    grid = QGridLayout()
+    dlg.setLayout(grid)
+    dlg.setWindowTitle("Memory Map")
 
-def mapStrings(mapTree):
-    for line in mapTree:
-        line = os.path.basename(line)
-        print(line)
-    return mapTree
+    treeWidget = QTreeWidget()
+    for entryName in tree:
+        topTreeNode = QTreeWidgetItem([entryName])
+        treeWidget.addTopLevelItem(topTreeNode)
+    makeTree(tree, "", topTreeNode)
+    treeWidget.itemClicked.connect(
+        lambda clickedItem: handleTreeItemClicked(clickedItem, tree))
+    grid.addWidget(treeWidget, 0, 0)
+
+    cancelBtn = QPushButton()
+    cancelBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+    cancelBtn.setText("Cancel")
+    cancelBtn.setStyleSheet(stylesheet.formBtnStyle)
+    cancelBtn.clicked.connect(dlg.close)
+    grid.addWidget(cancelBtn, 1, 0)
+
+    dlg.exec()

@@ -217,8 +217,13 @@ def moveFile(fileName, newDir):
                                os.path.join(cwd, newDir), node.data))
         persistMemMap()
     except Exception as e:
-        print(e)
         createErrorBox(str(e), QMessageBox.Critical)
+
+
+def getDirInfo(filePath):
+    stat = os.stat(filePath)
+    return {"isDir": True, "num_of_files_and_dirs": sum([len(files) for r, d, files in os.walk(filePath)]), "size": sum(os.path.getsize(os.path.join(dirpath, filename)) for dirpath, dirnames, filenames in os.walk(filePath) for filename in filenames), "file_mode": stat.st_mode, "inode": stat.st_ino, "num_of_hard_links": stat.st_nlink, "user_id": stat.st_uid,
+            "group_id": stat.st_gid, "last_access_time": stat.st_atime, "last_modified": stat.st_mtime}
 
 
 def recurseDirHandle(dir, root):
@@ -226,11 +231,12 @@ def recurseDirHandle(dir, root):
         if "children" in contentWithin:
             for child in contentWithin["children"]:
                 for name in child:
-                    print(child)
                     parent = os.path.join(
                         root, entryName) if not root == "" else entryName
 
                     if child[name]["data"]["isDir"]:
+                        child[name]["data"] = getDirInfo(os.path.join(
+                            parent, name))
                         if "children" in child[name]:
                             recurseDirHandle(child, parent)
                     else:
@@ -242,8 +248,9 @@ def recurseDirHandle(dir, root):
 def showMemMap():
     memMap = json.loads(tree.to_json(with_data=True))
     recurseDirHandle(memMap, "")
-    # print(tree.children("C:\\Users\\Bassam Muhammad\Desktop\\file_management-system"))
-    return tree
+    for entryName, contentWithin in memMap.items():
+        contentWithin["data"] = getDirInfo(entryName)
+    return memMap
 
 
 def mapToText(memMap, treeText):
@@ -265,4 +272,4 @@ def mapToText(memMap, treeText):
                             mapToText(child, treeText)
                     else:
                         pass
-    print(treeText)
+    # print(treeText)
