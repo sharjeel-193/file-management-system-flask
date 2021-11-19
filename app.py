@@ -173,13 +173,21 @@ moveFileBtn.clicked.connect(dialogues.showMoveFileDlg)
 moveFileBtn.setStyleSheet(stylesheet.funcBtnStyle)
 btnGrid.addWidget(moveFileBtn, 4, 0)
 
+truncateFileBtn = qtWidget.QPushButton()
+truncateFileBtn.setCursor(qtGui.QCursor(QtCore.Qt.PointingHandCursor))
+truncateFileBtn.setIcon(qtGui.QIcon("memory.png"))
+truncateFileBtn.setText(" Truncate File")
+truncateFileBtn.clicked.connect(dialogues.truncateFileDialog)
+truncateFileBtn.setStyleSheet(stylesheet.funcBtnStyle)
+btnGrid.addWidget(truncateFileBtn, 4, 1)
+
 memoryMapBtn = qtWidget.QPushButton()
 memoryMapBtn.setCursor(qtGui.QCursor(QtCore.Qt.PointingHandCursor))
 memoryMapBtn.setIcon(qtGui.QIcon("memory.png"))
 memoryMapBtn.setText(" Show Memory Map")
 memoryMapBtn.clicked.connect(dialogues.showMemMapDlg)
 memoryMapBtn.setStyleSheet(stylesheet.funcBtnStyle)
-btnGrid.addWidget(memoryMapBtn, 4, 1)
+btnGrid.addWidget(memoryMapBtn, 5, 1)
 
 
 mainLayout.addLayout(btnGrid)
