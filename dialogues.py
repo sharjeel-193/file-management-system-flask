@@ -550,3 +550,48 @@ def showMemMapDlg():
     grid.addWidget(cancelBtn, 1, 0)
 
     dlg.exec()
+
+def truncateFileDialog():
+    dlg = QDialog()
+    grid = QGridLayout()
+    dlg.setLayout(grid)
+    dlg.setWindowTitle("Truncate File")
+
+    label = QLabel()
+    label.setText("File Name")
+    label.setAlignment(QtCore.Qt.AlignCenter)
+    label.setStyleSheet(stylesheet.formLabelStyle)
+    grid.addWidget(label, 0, 0)
+
+    nameBox = QLineEdit()
+    nameBox.setStyleSheet(stylesheet.formInputStyle)
+    grid.addWidget(nameBox, 0, 1)
+
+    label = QLabel()
+    label.setText("Size")
+    label.setAlignment(QtCore.Qt.AlignCenter)
+    label.setStyleSheet(stylesheet.formLabelStyle)
+    grid.addWidget(label, 2, 0)
+
+    sizeBox = QLineEdit()
+    sizeBox.setValidator(QIntValidator())
+    sizeBox.setText(str(1))
+    sizeBox.setStyleSheet(stylesheet.formInputStyle)
+    grid.addWidget(sizeBox, 2, 1)
+
+    cancelBtn = QPushButton()
+    cancelBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+    cancelBtn.setText("Cancel")
+    cancelBtn.setStyleSheet(stylesheet.formBtnStyle)
+    cancelBtn.clicked.connect(dlg.close)
+    grid.addWidget(cancelBtn, 3, 0)
+
+    truncateBtn = QPushButton()
+    truncateBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+    truncateBtn.setText("Truncate")
+    truncateBtn.setStyleSheet(stylesheet.formBtnStyle)
+    truncateBtn.clicked.connect(lambda: functions.truncateFile(nameBox.text(), sizeBox.text()))
+    grid.addWidget(truncateBtn, 3, 1)
+
+    dlg.exec()
+

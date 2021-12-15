@@ -273,3 +273,18 @@ def mapToText(memMap, treeText):
                     else:
                         pass
     # print(treeText)
+
+
+def truncateFile(fileName, size):
+    try:
+        if os.path.exists(fileName):
+            file_obj = open(fileName, 'a')
+            file_obj.truncate(int(size))
+            file_obj.close()
+            createInfoBox(fileName + " Truncated")
+        else:
+            createErrorBox('File Specified does not exist',
+                           QMessageBox.Critical)
+
+    except Exception as e:
+        createErrorBox(str(e), QMessageBox.Critical)
