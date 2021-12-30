@@ -162,7 +162,7 @@ def readFromFile(fileName, pos, size):
         f = open(fileName, "r")
         data = f.read()
         f.close()
-        return {"data": data[int(pos):int(x)]}
+        return {"content": data[int(pos):int(x)]}
     except Exception as e:
         return {"error": str(e)}
 
@@ -231,7 +231,7 @@ def showMemMap():
     recurseDirHandle(memMap, "")
     for entryName, contentWithin in memMap.items():
         contentWithin["data"] = getDirInfo(entryName)
-    return {"data": memMap}
+    return {"content": memMap}
 
 
 def mapToText(memMap, treeText):

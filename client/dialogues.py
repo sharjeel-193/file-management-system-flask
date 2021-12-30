@@ -20,11 +20,14 @@ def handleReq(reqType, endpoint, showDlg):
     else:
         res = requests.delete(base_url+endpoint)
     parseRes = res.json()
-    print(parseRes)
+    print({'PARSE RESPONSE':parseRes})
     if "data" in parseRes.keys():
         if showDlg:
             functions.createInfoBox(parseRes["data"])
-        return parseRes["data"]
+        if "content" in parseRes.keys():
+            return parseRes["content"]
+    elif "content" in parseRes.keys():
+        return parseRes["content"]
     else:
         if showDlg:
             functions.createErrorBox(parseRes["error"], QMessageBox.Critical)
@@ -558,7 +561,7 @@ def handleTreeItemClicked(clickedItem, tree):
 
 
 def showMemMapDlg():
-    tree = handleReq("get", "/show_mem_map", True)
+    tree = handleReq("get", "/show_mem_map", False)
     dlg = QDialog()
     grid = QGridLayout()
     dlg.setLayout(grid)
