@@ -192,9 +192,10 @@ def moveFile(fileName, newDir):
         newPath = os.path.join(cwd, newDir, fileName)
         os.rename(oldPath, newPath)
         node = tree.get_node(oldPath)
+        nodeData = node.data
         tree.remove_node(oldPath)
         print(tree.create_node(fileName, newPath,
-                               os.path.join(cwd, newDir), node.data))
+                               os.path.join(cwd, newDir), nodeData))
         persistMemMap()
         return {"data": " File moved"}
     except Exception as e:

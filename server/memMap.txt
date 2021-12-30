@@ -1,1 +1,1 @@
-{"F:\\BSCS\\BSCS-Sem-5\\CS 330 - Operating Systems\\LABS\\Lab 6 - Submission\\server": {"children": [{"dir1": {"data": {"isDir": true}}}, {"file1.txt": {"data": {"isDir": false}}}], "data": null}}
+{"C:\\Users\\Bassam Muhammad\\Desktop\\file_management-system\\server": {"children": [{"j": {"children": [{"q.txt": {"data": {"isDir": false}}}], "data": {"isDir": true}}}], "data": null}}
