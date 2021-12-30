@@ -64,6 +64,7 @@ def write_file():
 def move_file():
     fileName = request.args.get('fileName', '')
     newDir = request.args.get('newDir', '')
+    print(fileName, newDir)
     return jsonify(moveFile(fileName, newDir))
 
 

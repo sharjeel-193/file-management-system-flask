@@ -371,8 +371,8 @@ def readFileDlg():
     writeBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
     writeBtn.setText("Read from File")
     writeBtn.setStyleSheet(stylesheet.formBtnStyle)
-    writeBtn.clicked.connect(lambda: textBox.setPlainText(
-        functions.readFromFile(nameBox.text(), posBox.text(), sizeBox.text())))
+    writeBtn.clicked.connect(lambda: textBox.setPlainText(handleReq(
+        "get", f"/read_file?fileName={nameBox.text()}&pos={posBox.text()}&size={sizeBox.text()}", True)))
     grid.addWidget(writeBtn, 5, 1)
 
     dlg.exec()
@@ -441,7 +441,7 @@ def moveContentFile():
     moveBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
     moveBtn.setText("Move Content within File")
     moveBtn.setStyleSheet(stylesheet.formBtnStyle)
-    moveBtn.clicked.connect(lambda: handleReq("get",
+    moveBtn.clicked.connect(lambda: handleReq("patch",
                                               f"/move_file_content?fileName={nameBox.text()}&start={startBox.text()}&size={sizeBox.text()}&target={targetBox.text()}", True))
     grid.addWidget(moveBtn, 4, 1)
 
@@ -487,8 +487,8 @@ def showMoveFileDlg():
     moveBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
     moveBtn.setText("Move File")
     moveBtn.setStyleSheet(stylesheet.formBtnStyle)
-    moveBtn.clicked.connect(lambda: handleReq("get",
-                                              f"show_file?fileName={nameBox.text()}&newDir={dirName.text()}", True))
+    moveBtn.clicked.connect(lambda: handleReq("patch",
+                                              f"/move_file?fileName={nameBox.text()}&newDir={dirName.text()}", True))
     grid.addWidget(moveBtn, 2, 1)
 
     dlg.exec()
