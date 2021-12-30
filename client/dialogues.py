@@ -514,7 +514,7 @@ def makeTree(tree, root, treeNode):
                         root, entryName) if not root == "" else entryName
                     branch = QTreeWidgetItem([name])
                     treeNode.addChild(branch)
-                    if child[name]["data"]["data"]["isDir"]:
+                    if child[name]["data"]["isDir"]:
                         if "children" in child[name]:
                             makeTree(child, parent, branch)
 

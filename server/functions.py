@@ -217,7 +217,7 @@ def recurseDirHandle(dir, root):
                         root, entryName) if not root == "" else entryName
 
                     if child[name]["data"]["isDir"]:
-                        child[name]["data"] = getDirInfo(os.path.join(
+                        child[name] = getDirInfo(os.path.join(
                             parent, name))
                         if "children" in child[name]:
                             recurseDirHandle(child, parent)
