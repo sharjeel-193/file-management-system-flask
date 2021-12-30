@@ -82,4 +82,4 @@ def show_mem_map():
 
 if __name__ == "__main__":
     makeMemMap()
-    app.run()
+    app.run(port=95)
