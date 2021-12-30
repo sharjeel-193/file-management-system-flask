@@ -77,8 +77,18 @@ def truncate_file():
 
 @app.get("/show_mem_map")
 def show_mem_map():
-    print(showMemMap())
     return jsonify(showMemMap())
+
+
+@app.get("/cwd")
+def cwd():
+    return jsonify({"content": os.getcwd()})
+
+
+@app.patch("/change_cwd")
+def change_cwd():
+    newPath = request.args.get("newPath", "")
+    return jsonify(changeWD(newPath))
 
 
 if __name__ == "__main__":

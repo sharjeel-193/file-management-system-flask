@@ -269,3 +269,12 @@ def truncateFile(fileName, size):
 
     except Exception as e:
         return {"error": str(e)}
+
+
+def changeWD(newPath):
+    try:
+        if os.getcwd() != newPath:
+            os.chdir(newPath)
+            return {"data": "Current Working Directory Changed"}
+    except Exception as e:
+        return {"error": str(e)}

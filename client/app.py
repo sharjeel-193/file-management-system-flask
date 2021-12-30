@@ -51,7 +51,7 @@ class MainWindow(qtWidget.QWidget):
         pathLayout.addWidget(backBtn)
 
         self.pathName = qtWidget.QLineEdit()
-        self.pathName.setText(functions.getcwd())
+        self.pathName.setText(dialogues.handleReq("get", "/cwd", False))
         # pathName.textChanged.connect(functions.getcwd())
         self.pathName.setStyleSheet(stylesheet.pathLineStyle)
         pathLayout.addWidget(self.pathName)
@@ -61,7 +61,8 @@ class MainWindow(qtWidget.QWidget):
         goBtn.setIcon(qtGui.QIcon("goBtn.png"))
         goBtn.setToolTip("Go")
         goBtn.setStyleSheet(stylesheet.backBtnStyle)
-        goBtn.clicked.connect(self.changeWD)
+        goBtn.clicked.connect(lambda: dialogues.handleReq(
+            "patch", f"/change_cwd?newPath={self.pathName.text()}", True))
         pathLayout.addWidget(goBtn)
 
         mainLayout.addLayout(pathLayout)
