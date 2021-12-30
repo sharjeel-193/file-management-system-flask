@@ -28,6 +28,7 @@ def handleReq(reqType, endpoint, showDlg):
             if "content" in parseRes.keys():
                 return parseRes["content"]
         elif "content" in parseRes.keys():
+            print(parseRes["content"])
             return parseRes["content"]
         else:
             if showDlg:
@@ -513,7 +514,7 @@ def makeTree(tree, root, treeNode):
                         root, entryName) if not root == "" else entryName
                     branch = QTreeWidgetItem([name])
                     treeNode.addChild(branch)
-                    if child[name]["data"]["isDir"]:
+                    if child[name]["data"]["data"]["isDir"]:
                         if "children" in child[name]:
                             makeTree(child, parent, branch)
 
@@ -568,6 +569,7 @@ def handleTreeItemClicked(clickedItem, tree):
 
 def showMemMapDlg():
     tree = handleReq("get", "/show_mem_map", False)
+    print(tree)
     if tree == "error":
         return
     dlg = QDialog()

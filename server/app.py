@@ -77,6 +77,7 @@ def truncate_file():
 
 @app.get("/show_mem_map")
 def show_mem_map():
+    print(showMemMap())
     return jsonify(showMemMap())
 
 
