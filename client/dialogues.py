@@ -11,27 +11,31 @@ base_url = "http://127.0.0.1:5000"
 
 def handleReq(reqType, endpoint, showDlg):
     res = ""
-    if reqType == "get":
-        res = requests.get(base_url+endpoint)
-    elif reqType == "post":
-        res = requests.post(base_url+endpoint)
-    elif reqType == "patch":
-        res = requests.patch(base_url+endpoint)
-    else:
-        res = requests.delete(base_url+endpoint)
-    parseRes = res.json()
-    print({'PARSE RESPONSE':parseRes})
-    if "data" in parseRes.keys():
-        if showDlg:
-            functions.createInfoBox(parseRes["data"])
-        if "content" in parseRes.keys():
+    try:
+        if reqType == "get":
+            res = requests.get(base_url+endpoint)
+        elif reqType == "post":
+            res = requests.post(base_url+endpoint)
+        elif reqType == "patch":
+            res = requests.patch(base_url+endpoint)
+        else:
+            res = requests.delete(base_url+endpoint)
+        parseRes = res.json()
+        print({'PARSE RESPONSE':parseRes})
+        if "data" in parseRes.keys():
+            if showDlg:
+                functions.createInfoBox(parseRes["data"])
+            if "content" in parseRes.keys():
+                return parseRes["content"]
+        elif "content" in parseRes.keys():
             return parseRes["content"]
-    elif "content" in parseRes.keys():
-        return parseRes["content"]
-    else:
-        if showDlg:
-            functions.createErrorBox(parseRes["error"], QMessageBox.Critical)
-        return parseRes["error"]
+        else:
+            if showDlg:
+                functions.createErrorBox(parseRes["error"], QMessageBox.Critical)
+            return parseRes["error"]
+    except Exception as e:
+        functions.createErrorBox("Connection with Server Failed", QMessageBox.Critical)
+        return "error"
 
 
 def createFileDlg():
@@ -562,6 +566,8 @@ def handleTreeItemClicked(clickedItem, tree):
 
 def showMemMapDlg():
     tree = handleReq("get", "/show_mem_map", False)
+    if tree=="error":
+        return
     dlg = QDialog()
     grid = QGridLayout()
     dlg.setLayout(grid)
