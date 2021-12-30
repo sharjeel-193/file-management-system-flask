@@ -1,9 +1,34 @@
 import stylesheet
-from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QListWidget, QPushButton, QGridLayout, QPlainTextEdit, QTextEdit, QCheckBox, QTreeWidget, QTreeWidgetItem
+from PyQt5.QtWidgets import QDialog, QLabel, QMessageBox, QLineEdit, QListWidget, QPushButton, QGridLayout, QPlainTextEdit, QTextEdit, QCheckBox, QTreeWidget, QTreeWidgetItem
 from PyQt5 import QtCore
-from PyQt5.QtGui import QCursor, QValidator, QIntValidator
+from PyQt5.QtGui import QCursor, QIntValidator
 import functions
 import os
+import requests
+
+base_url = "http://127.0.0.1:5000"
+
+
+def handleReq(reqType, endpoint, showDlg):
+    res = ""
+    if reqType == "get":
+        res = requests.get(base_url+endpoint)
+    elif reqType == "post":
+        res = requests.post(base_url+endpoint)
+    elif reqType == "patch":
+        res = requests.patch(base_url+endpoint)
+    else:
+        res = requests.delete(base_url+endpoint)
+    parseRes = res.json()
+    print(parseRes)
+    if "data" in parseRes.keys():
+        if showDlg:
+            functions.createInfoBox(parseRes["data"])
+        return parseRes["data"]
+    else:
+        if showDlg:
+            functions.createErrorBox(parseRes["error"], QMessageBox.Critical)
+        return parseRes["error"]
 
 
 def createFileDlg():
@@ -34,7 +59,8 @@ def createFileDlg():
     addBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
     addBtn.setText("Add")
     addBtn.setStyleSheet(stylesheet.formBtnStyle)
-    addBtn.clicked.connect(lambda: functions.createFile(nameBox.text()))
+    addBtn.clicked.connect(lambda: handleReq("post",
+                                             f"/add_file?fileName={nameBox.text()}", True))
     grid.addWidget(addBtn, 1, 1)
 
     dlg.exec()
@@ -68,7 +94,8 @@ def deleteFileDlg():
     delBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
     delBtn.setText("Delete")
     delBtn.setStyleSheet(stylesheet.formBtnStyle)
-    delBtn.clicked.connect(lambda: functions.deleteFile(nameBox.text()))
+    delBtn.clicked.connect(lambda: handleReq("delete",
+                                             f"/del_file?fileName={nameBox.text()}", True))
     grid.addWidget(delBtn, 1, 1)
 
     dlg.exec()
@@ -102,7 +129,8 @@ def addDirDlg():
     addBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
     addBtn.setText("Add")
     addBtn.setStyleSheet(stylesheet.formBtnStyle)
-    addBtn.clicked.connect(lambda: functions.createDirectory(nameBox.text()))
+    addBtn.clicked.connect(lambda: handleReq("post",
+                                             f"/add_dir?dirName={nameBox.text()}", True))
     grid.addWidget(addBtn, 1, 1)
 
     dlg.exec()
@@ -136,7 +164,8 @@ def delDirDlg():
     delBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
     delBtn.setText("Delete")
     delBtn.setStyleSheet(stylesheet.formBtnStyle)
-    delBtn.clicked.connect(lambda: functions.deleteDirectory(nameBox.text()))
+    delBtn.clicked.connect(lambda: handleReq("delete",
+                                             f"/del_dir?dirName={nameBox.text()}", True))
     grid.addWidget(delBtn, 1, 1)
 
     dlg.exec()
@@ -170,7 +199,8 @@ def openFileDlg():
     openBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
     openBtn.setText("Open")
     openBtn.setStyleSheet(stylesheet.formBtnStyle)
-    openBtn.clicked.connect(lambda: functions.openFile(nameBox.text()))
+    openBtn.clicked.connect(lambda: handleReq("get",
+                                              f"/open_file?fileName={nameBox.text()}", True))
     grid.addWidget(openBtn, 1, 1)
 
     dlg.exec()
@@ -204,7 +234,8 @@ def closeFileDlg():
     closeBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
     closeBtn.setText("Close")
     closeBtn.setStyleSheet(stylesheet.formBtnStyle)
-    closeBtn.clicked.connect(lambda: functions.closeFile(nameBox.text()))
+    closeBtn.clicked.connect(lambda: handleReq("get",
+                                               f"/close_file?fileName={nameBox.text()}", True))
     grid.addWidget(closeBtn, 1, 1)
 
     dlg.exec()
@@ -271,8 +302,8 @@ def writeToFileDlg():
     writeBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
     writeBtn.setText("Write to File")
     writeBtn.setStyleSheet(stylesheet.formBtnStyle)
-    writeBtn.clicked.connect(lambda: functions.writeToFile(
-        nameBox.text(), posBox.text(), textBox.toPlainText(), checkAppend.isChecked()))
+    writeBtn.clicked.connect(lambda: handleReq("patch",
+                                               f"/write_file?fileName={nameBox.text()}&pos={posBox.text()}&text={textBox.toPlainText()}&appMode={checkAppend.isChecked()}", True))
     grid.addWidget(writeBtn, 5, 1)
 
     dlg.exec()
@@ -410,8 +441,8 @@ def moveContentFile():
     moveBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
     moveBtn.setText("Move Content within File")
     moveBtn.setStyleSheet(stylesheet.formBtnStyle)
-    moveBtn.clicked.connect(lambda: functions.moveContentWithinFile(
-        nameBox.text(), startBox.text(), sizeBox.text(), targetBox.text()))
+    moveBtn.clicked.connect(lambda: handleReq("get",
+                                              f"/move_file_content?fileName={nameBox.text()}&start={startBox.text()}&size={sizeBox.text()}&target={targetBox.text()}", True))
     grid.addWidget(moveBtn, 4, 1)
 
     dlg.exec()
@@ -456,8 +487,8 @@ def showMoveFileDlg():
     moveBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
     moveBtn.setText("Move File")
     moveBtn.setStyleSheet(stylesheet.formBtnStyle)
-    moveBtn.clicked.connect(lambda: functions.moveFile(
-        nameBox.text(), dirName.text()))
+    moveBtn.clicked.connect(lambda: handleReq("get",
+                                              f"show_file?fileName={nameBox.text()}&newDir={dirName.text()}", True))
     grid.addWidget(moveBtn, 2, 1)
 
     dlg.exec()
@@ -527,7 +558,7 @@ def handleTreeItemClicked(clickedItem, tree):
 
 
 def showMemMapDlg():
-    tree = functions.showMemMap()
+    tree = handleReq("get", "/show_mem_map", True)
     dlg = QDialog()
     grid = QGridLayout()
     dlg.setLayout(grid)
@@ -550,6 +581,7 @@ def showMemMapDlg():
     grid.addWidget(cancelBtn, 1, 0)
 
     dlg.exec()
+
 
 def truncateFileDialog():
     dlg = QDialog()
@@ -590,8 +622,8 @@ def truncateFileDialog():
     truncateBtn.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
     truncateBtn.setText("Truncate")
     truncateBtn.setStyleSheet(stylesheet.formBtnStyle)
-    truncateBtn.clicked.connect(lambda: functions.truncateFile(nameBox.text(), sizeBox.text()))
+    truncateBtn.clicked.connect(
+        lambda: handleReq("patch", f"/truncate_file?fileName={nameBox.text()}&size={sizeBox.text()}", True))
     grid.addWidget(truncateBtn, 3, 1)
 
     dlg.exec()
-
