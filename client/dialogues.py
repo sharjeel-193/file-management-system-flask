@@ -6,7 +6,8 @@ import functions
 import os
 import requests
 
-base_url = "http://127.0.0.1:95"
+base_url = ""
+userName = ""
 
 
 def handleReq(reqType, endpoint, showDlg):
