@@ -77,7 +77,7 @@ def open_file():
         return jsonify({"error": "You already have access to 3 files"})
     lFileName = f"${userName}-${fileName}"
     lockedFiles.append(lFileName)
-    result = jsonify(deleteFile(fileName))
+    result = jsonify(openFile(fileName))
     lockedFiles.remove(lFileName)
     return result
 
