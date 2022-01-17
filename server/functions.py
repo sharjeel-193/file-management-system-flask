@@ -204,8 +204,8 @@ def moveFile(fileName, newDir):
 
 def getDirInfo(filePath):
     stat = os.stat(filePath)
-    return {"data": {"isDir": True, "num_of_files_and_dirs": sum([len(files) for r, d, files in os.walk(filePath)]), "size": sum(os.path.getsize(os.path.join(dirpath, filename)) for dirpath, dirnames, filenames in os.walk(filePath) for filename in filenames), "file_mode": stat.st_mode, "inode": stat.st_ino, "num_of_hard_links": stat.st_nlink, "user_id": stat.st_uid,
-            "group_id": stat.st_gid, "last_access_time": stat.st_atime, "last_modified": stat.st_mtime}}
+    return {"isDir": True, "num_of_files_and_dirs": sum([len(files) for r, d, files in os.walk(filePath)]), "size": sum(os.path.getsize(os.path.join(dirpath, filename)) for dirpath, dirnames, filenames in os.walk(filePath) for filename in filenames), "file_mode": stat.st_mode, "inode": stat.st_ino, "num_of_hard_links": stat.st_nlink, "user_id": stat.st_uid,
+            "group_id": stat.st_gid, "last_access_time": stat.st_atime, "last_modified": stat.st_mtime}
 
 
 def recurseDirHandle(dir, root):
@@ -217,7 +217,7 @@ def recurseDirHandle(dir, root):
                         root, entryName) if not root == "" else entryName
 
                     if child[name]["data"]["isDir"]:
-                        child[name] = getDirInfo(os.path.join(
+                        child[name]["data"] = getDirInfo(os.path.join(
                             parent, name))
                         if "children" in child[name]:
                             recurseDirHandle(child, parent)
@@ -231,7 +231,9 @@ def showMemMap():
     memMap = json.loads(tree.to_json(with_data=True))
     recurseDirHandle(memMap, "")
     for entryName, contentWithin in memMap.items():
+        print(contentWithin)
         contentWithin["data"] = getDirInfo(entryName)
+    print(memMap)
     return {"content": memMap}
 
 
