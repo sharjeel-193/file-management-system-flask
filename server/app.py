@@ -56,7 +56,8 @@ def open_file():
     if isFileLocked(fileName):
         return jsonify({"error": "File already in use"})
     lockedFiles.append(fileName)
-    result = jsonify(deleteFile(fileName))
+    # result = jsonify(deleteFile(fileName))
+    result = jsonify(openFile(fileName))
     lockedFiles.remove(fileName)
     return result
 

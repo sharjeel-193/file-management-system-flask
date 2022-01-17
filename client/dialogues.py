@@ -22,14 +22,14 @@ def handleReq(reqType, endpoint, showDlg):
         else:
             res = requests.delete(base_url+endpoint)
         parseRes = res.json()
-        print({'PARSE RESPONSE': parseRes})
+        # print({'PARSE RESPONSE': parseRes})
         if "data" in parseRes.keys():
             if showDlg:
                 functions.createInfoBox(parseRes["data"])
             if "content" in parseRes.keys():
                 return parseRes["content"]
         elif "content" in parseRes.keys():
-            print(parseRes["content"])
+            # print(parseRes["content"])
             return parseRes["content"]
         else:
             if showDlg:
@@ -510,7 +510,7 @@ def makeTree(tree, root, treeNode):
         if "children" in contentWithin:
             for child in contentWithin["children"]:
                 for name in child:
-                    print(child)
+                    # print(child)
                     parent = os.path.join(
                         root, entryName) if not root == "" else entryName
                     branch = QTreeWidgetItem([name])
@@ -570,7 +570,7 @@ def handleTreeItemClicked(clickedItem, tree):
 
 def showMemMapDlg():
     tree = handleReq("get", "/show_mem_map", False)
-    print(tree)
+    # print(tree)
     if tree == "error":
         return
     dlg = QDialog()
