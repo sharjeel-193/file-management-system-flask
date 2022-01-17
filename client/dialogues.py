@@ -71,7 +71,7 @@ def createFileDlg():
     addBtn.setText("Add")
     addBtn.setStyleSheet(stylesheet.formBtnStyle)
     addBtn.clicked.connect(lambda: handleReq("post",
-                                             f"/add_file?fileName={nameBox.text()}", True))
+                                             f"/add_file?fileName={nameBox.text()}&userName=${userName}", True))
     grid.addWidget(addBtn, 1, 1)
 
     dlg.exec()
@@ -106,7 +106,7 @@ def deleteFileDlg():
     delBtn.setText("Delete")
     delBtn.setStyleSheet(stylesheet.formBtnStyle)
     delBtn.clicked.connect(lambda: handleReq("delete",
-                                             f"/del_file?fileName={nameBox.text()}", True))
+                                             f"/del_file?fileName={nameBox.text()}&userName=${userName}", True))
     grid.addWidget(delBtn, 1, 1)
 
     dlg.exec()
@@ -141,7 +141,7 @@ def addDirDlg():
     addBtn.setText("Add")
     addBtn.setStyleSheet(stylesheet.formBtnStyle)
     addBtn.clicked.connect(lambda: handleReq("post",
-                                             f"/add_dir?dirName={nameBox.text()}", True))
+                                             f"/add_dir?dirName={nameBox.text()}&userName=${userName}", True))
     grid.addWidget(addBtn, 1, 1)
 
     dlg.exec()
@@ -176,7 +176,7 @@ def delDirDlg():
     delBtn.setText("Delete")
     delBtn.setStyleSheet(stylesheet.formBtnStyle)
     delBtn.clicked.connect(lambda: handleReq("delete",
-                                             f"/del_dir?dirName={nameBox.text()}", True))
+                                             f"/del_dir?dirName={nameBox.text()}&userName=${userName}", True))
     grid.addWidget(delBtn, 1, 1)
 
     dlg.exec()
@@ -211,7 +211,7 @@ def openFileDlg():
     openBtn.setText("Open")
     openBtn.setStyleSheet(stylesheet.formBtnStyle)
     openBtn.clicked.connect(lambda: handleReq("get",
-                                              f"/open_file?fileName={nameBox.text()}", True))
+                                              f"/open_file?fileName={nameBox.text()}&userName=${userName}", True))
     grid.addWidget(openBtn, 1, 1)
 
     dlg.exec()
@@ -246,7 +246,7 @@ def closeFileDlg():
     closeBtn.setText("Close")
     closeBtn.setStyleSheet(stylesheet.formBtnStyle)
     closeBtn.clicked.connect(lambda: handleReq("get",
-                                               f"/close_file?fileName={nameBox.text()}", True))
+                                               f"/close_file?fileName={nameBox.text()}&userName=${userName}", True))
     grid.addWidget(closeBtn, 1, 1)
 
     dlg.exec()
@@ -314,7 +314,7 @@ def writeToFileDlg():
     writeBtn.setText("Write to File")
     writeBtn.setStyleSheet(stylesheet.formBtnStyle)
     writeBtn.clicked.connect(lambda: handleReq("patch",
-                                               f"/write_file?fileName={nameBox.text()}&pos={posBox.text()}&text={textBox.toPlainText()}&appMode={checkAppend.isChecked()}", True))
+                                               f"/write_file?fileName={nameBox.text()}&userName=${userName}&pos={posBox.text()}&text={textBox.toPlainText()}&appMode={checkAppend.isChecked()}", True))
     grid.addWidget(writeBtn, 5, 1)
 
     dlg.exec()
@@ -383,7 +383,7 @@ def readFileDlg():
     writeBtn.setText("Read from File")
     writeBtn.setStyleSheet(stylesheet.formBtnStyle)
     writeBtn.clicked.connect(lambda: textBox.setPlainText(handleReq(
-        "get", f"/read_file?fileName={nameBox.text()}&pos={posBox.text()}&size={sizeBox.text()}", True)))
+        "get", f"/read_file?fileName={nameBox.text()}&userName=${userName}&pos={posBox.text()}&size={sizeBox.text()}", True)))
     grid.addWidget(writeBtn, 5, 1)
 
     dlg.exec()
@@ -453,7 +453,7 @@ def moveContentFile():
     moveBtn.setText("Move Content within File")
     moveBtn.setStyleSheet(stylesheet.formBtnStyle)
     moveBtn.clicked.connect(lambda: handleReq("patch",
-                                              f"/move_file_content?fileName={nameBox.text()}&start={startBox.text()}&size={sizeBox.text()}&target={targetBox.text()}", True))
+                                              f"/move_file_content?fileName={nameBox.text()}&userName=${userName}&start={startBox.text()}&size={sizeBox.text()}&target={targetBox.text()}", True))
     grid.addWidget(moveBtn, 4, 1)
 
     dlg.exec()
@@ -499,7 +499,7 @@ def showMoveFileDlg():
     moveBtn.setText("Move File")
     moveBtn.setStyleSheet(stylesheet.formBtnStyle)
     moveBtn.clicked.connect(lambda: handleReq("patch",
-                                              f"/move_file?fileName={nameBox.text()}&newDir={dirName.text()}", True))
+                                              f"/move_file?fileName={nameBox.text()}&userName=${userName}&newDir={dirName.text()}", True))
     grid.addWidget(moveBtn, 2, 1)
 
     dlg.exec()
@@ -637,7 +637,7 @@ def truncateFileDialog():
     truncateBtn.setText("Truncate")
     truncateBtn.setStyleSheet(stylesheet.formBtnStyle)
     truncateBtn.clicked.connect(
-        lambda: handleReq("patch", f"/truncate_file?fileName={nameBox.text()}&size={sizeBox.text()}", True))
+        lambda: handleReq("patch", f"/truncate_file?fileName={nameBox.text()}&userName=${userName}&size={sizeBox.text()}", True))
     grid.addWidget(truncateBtn, 3, 1)
 
     dlg.exec()
